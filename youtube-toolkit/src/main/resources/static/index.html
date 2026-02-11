@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Toolkit - AI-Powered Creator Tools</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --dark-bg: #0f0f23;
+            --card-bg: rgba(20, 20, 40, 0.8);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b8;
+            --accent-blue: #667eea;
+            --accent-purple: #764ba2;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        [data-theme="light"] {
+            --dark-bg: #f5f7fa;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --glass-bg: rgba(0, 0, 0, 0.02);
+            --border-color: rgba(0, 0, 0, 0.1);
+            --text-primary: #1a1a2e;
+            --text-secondary: #6b7280;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(102, 126, 234, 0.1) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.3s;
+        }
+
+        [data-theme="light"] body::before {
+            opacity: 0.3;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            width: 50px;
+            height: 26px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 13px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .theme-toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        [data-theme="light"] .theme-toggle-slider {
+            transform: translateX(24px);
+        }
+
+        .theme-icon {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+        }
+
+        .theme-icon.sun {
+            right: 6px;
+        }
+
+        .theme-icon.moon {
+            left: 6px;
+        }
+
+        /* Header */
+        .header {
+            padding: 60px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+            letter-spacing: -2px;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .header p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Home Page */
+        #homePage {
+            animation: fadeInScale 0.5s ease;
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 40px 0 60px;
+        }
+
+        .hero-section h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-section p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin: 60px 0;
+        }
+
+        .tool-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 32px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        }
+
+        .tool-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.2);
+        }
+
+        .tool-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .tool-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .tool-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 60px;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .step-card {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+
+        .step-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .step-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* About Section */
+        .about-section {
+            padding: 80px 0;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            margin: 40px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 40px;
+            text-align: center;
+        }
+
+        .about-content h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .about-content p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 60px 0 40px;
+            margin-top: 80px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-section p,
+        .footer-section ul {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-bottom p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .disclaimer {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 40px 0;
+            padding: 0 20px;
+        }
+
+        .tab-btn {
+            padding: 14px 28px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            color: var(--text-secondary);
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: -1;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: var(--text-primary);
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        }
+
+        .tab-btn.active::before {
+            opacity: 1;
+        }
+
+        .back-home-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            padding: 12px 24px;
+            border-radius: 12px;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .back-home-btn:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        /* Tool Sections */
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+        }
+
+        .tool-section {
+            display: none;
+            animation: fadeInScale 0.5s ease;
+        }
+
+        .tool-section.active {
+            display: block;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .tool-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .tool-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tool-header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Form Card */
+        .form-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 16px 20px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .input-group input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 16px 40px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 36px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Results */
+        .result-container {
+            margin-top: 40px;
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-card h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .result-image {
+            width: 100%;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: right;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-error {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--error);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Thumbnails Grid */
+        .thumbnail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .thumbnail-item {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .thumbnail-item:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-blue);
+        }
+
+        .thumbnail-item h4 {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .thumbnail-item img {
+            width: 100%;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .thumbnail-item a {
+            display: inline-block;
+            padding: 10px 24px;
+            background: var(--primary-gradient);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .thumbnail-item a:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Tags */
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .tag {
+            padding: 8px 16px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: all 0.3s;
+        }
+
+        .tag:hover {
+            border-color: var(--accent-blue);
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border-left: 4px solid;
+            backdrop-filter: blur(10px);
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        .alert-info {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        /* Earnings Calculator */
+        .earnings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 24px;
+        }
+
+        .earnings-item {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .earnings-item:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-4px);
+        }
+
+        .earnings-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .earnings-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Utility */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Channel Avatar */
+        .channel-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: block;
+            border: 4px solid var(--border-color);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .channel-banner {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .hero-section h2 {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .tool-header h2 {
+                font-size: 2rem;
+            }
+
+            .form-card {
+                padding: 24px;
+            }
+
+            .result-card {
+                padding: 24px;
+            }
+
+            .nav-tabs {
+                gap: 8px;
+            }
+
+            .tab-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+
+            .about-content {
+                padding: 0 20px;
+            }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+<div class="container">
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo" onclick="goHome()">🎬 YouTube Toolkit</div>
+        <div class="nav-controls">
+            <div class="theme-toggle" onclick="toggleTheme()">
+                <span class="theme-icon moon">🌙</span>
+                <span class="theme-icon sun">☀️</span>
+                <div class="theme-toggle-slider"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home Page -->
+    <div id="homePage">
+        <div class="header">
+            <h1>YouTube Toolkit</h1>
+<!--            <p>AI-Powered Tools for YouTube Creators</p>-->
+<!--        </div>-->
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h2>Powerful Analytics at Your Fingertips</h2>
+            <p>Unlock deep insights about any YouTube video or channel with our comprehensive suite of professional tools</p>
+        </div>
+        </div>
+
+
+        <!-- Tools Grid -->
+        <div class="tools-grid">
+
+            <div class="tool-card" onclick="navigateToTool('monetization')">
+                <div class="tool-icon">💰</div>
+                <h3>Monetization Checker</h3>
+                <p>Check if a video or channel is monetized based on various YouTube indicators</p>
+            </div>
+
+            <div class="tool-card" onclick="navigateToTool('thumbnail')">
+                <div class="tool-icon">🖼️</div>
+                <h3>Thumbnail Downloader</h3>
+                <p>Download video thumbnails in all available quality levels from default to max resolution</p>
+            </div>
+
+            <div class="tool-card " onclick="navigateToTool('video')">
+                <div class="tool-icon">📹</div>
+                <h3>Video Information</h3>
+                <p>Get detailed analytics including views, likes, comments, duration, and more for any YouTube video</p>
+            </div>
+
+        </div>
+
+        <div class="tools-grid">
+            <div class="tool-card" onclick="navigateToTool('channel')">
+                <div class="tool-icon">🎬</div>
+                <h3>Channel Analytics</h3>
+                <p>Analyze channel performance with subscriber count, total views, video count, and monetization status</p>
+            </div>
+
+            <div class="tool-card" onclick="navigateToTool('tags')">
+                <div class="tool-icon">🏷️</div>
+                <h3>Tags Extractor</h3>
+                <p>Extract all tags used in any YouTube video to improve your own SEO strategy</p>
+            </div>
+
+            <div class="tool-card" onclick="navigateToTool('calculator')">
+                <div class="tool-icon">🧮</div>
+                <h3>Earnings Calculator</h3>
+                <p>Estimate potential YouTube earnings based on view count and average CPM rates</p>
+            </div>
+
+        </div>
+
+
+
+
+    <!--        &lt;!&ndash; Tools Grid &ndash;&gt;-->
+<!--        <div class="tools-grid">-->
+<!--            <div class="tool-card" onclick="navigateToTool('video')">-->
+<!--                <div class="tool-icon">📹</div>-->
+<!--                <h3>Video Information</h3>-->
+<!--                <p>Get detailed analytics including views, likes, comments, duration, and more for any YouTube video</p>-->
+<!--            </div>-->
+
+<!--            <div class="tool-card" onclick="navigateToTool('channel')">-->
+<!--                <div class="tool-icon">🎬</div>-->
+<!--                <h3>Channel Analytics</h3>-->
+<!--                <p>Analyze channel performance with subscriber count, total views, video count, and monetization status</p>-->
+<!--            </div>-->
+
+<!--            <div class="tool-card" onclick="navigateToTool('thumbnail')">-->
+<!--                <div class="tool-icon">-->
+<!--                    <parameter name="command">update</parameter>-->
+<!--                    <parameter name="id">youtube_toolkit_frontend</parameter>-->
+<!--                    <parameter name="old_str">-->
+<!--                        <div class="tool-card" onclick="navigateToTool('thumbnail')">-->
+<!--                        <div class="tool-icon">-->
+<!--                    </parameter>-->
+<!--                    <parameter name="new_str">-->
+<!--                        <div class="tool-card" onclick="navigateToTool('thumbnail')">-->
+<!--                        <div class="tool-icon">🖼️</div>-->
+<!--                        <h3>Thumbnail Downloader</h3>-->
+<!--                        <p>Download video thumbnails in all available quality levels from default to max resolution</p>-->
+<!--                    </div>-->
+<!--                        <div class="tool-card" onclick="navigateToTool('tags')">-->
+<!--                            <div class="tool-icon">🏷️</div>-->
+<!--                            <h3>Tags Extractor</h3>-->
+<!--                            <p>Extract all tags used in any YouTube video to improve your own SEO strategy</p>-->
+<!--                        </div>-->
+
+<!--                        <div class="tool-card" onclick="navigateToTool('monetization')">-->
+<!--                            <div class="tool-icon">💰</div>-->
+<!--                            <h3>Monetization Checker</h3>-->
+<!--                            <p>Check if a video or channel is monetized based on various YouTube indicators</p>-->
+<!--                        </div>-->
+
+<!--                        <div class="tool-card" onclick="navigateToTool('calculator')">-->
+<!--                            <div class="tool-icon">🧮</div>-->
+<!--                            <h3>Earnings Calculator</h3>-->
+<!--                            <p>Estimate potential YouTube earnings based on view count and average CPM rates</p>-->
+<!--                        </div>-->
+<!--                </div>-->
+
+                <!-- How It Works Section -->
+                <div class="how-it-works">
+                    <h2 class="section-title">How It Works</h2>
+                    <p class="section-subtitle">Simple, fast, and powerful - get YouTube insights in 3 easy steps</p>
+
+                    <div class="steps-grid">
+                        <div class="step-card">
+                            <div class="step-number">1</div>
+                            <h3>Choose Your Tool</h3>
+                            <p>Select from our comprehensive suite of YouTube analytics tools based on your needs</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">2</div>
+                            <h3>Enter URL or ID</h3>
+                            <p>Paste any YouTube video URL, channel URL, or ID into the input field</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">3</div>
+                            <h3>Get Instant Results</h3>
+                            <p>Receive detailed analytics and insights in seconds, beautifully formatted and ready to use</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Section -->
+                <div class="about-section">
+                    <div class="about-content">
+                        <h2>About YouTube Toolkit</h2>
+
+                        <p>YouTube Toolkit is a powerful web app that gives creators and marketers quick access to accurate, real-time YouTube analytics using the official YouTube Data API. Analyze competitors, track trends, and optimize your content with ease using professional-grade tools built for smarter YouTube growth.</p>
+<!--                        <p>-->
+<!--                            YouTube Toolkit is a comprehensive web application designed for content creators, marketers, and analysts who need quick access to YouTube analytics and insights.-->
+<!--                        </p>-->
+<!--                        <p>-->
+<!--                            Built with cutting-edge technology and powered by the official YouTube Data API, our platform provides accurate, real-time data to help you make informed decisions about your content strategy.-->
+<!--                        </p>-->
+<!--                        <p>-->
+<!--                            Whether you're analyzing competitors, researching trending content, or optimizing your own videos, YouTube Toolkit gives you the professional-grade tools you need to succeed on YouTube.-->
+<!--                        </p>-->
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="footer">
+                    <div class="footer-content">
+                        <div class="footer-section">
+                            <h3>YouTube Toolkit</h3>
+                            <p>Professional analytics tools for YouTube creators and marketers. Get instant insights about any video or channel.</p>
+                        </div>
+
+                        <div class="footer-section">
+                            <h3>Quick Links</h3>
+                            <ul>
+                                <li>Video Information</li>
+                                <li>Channel Analytics</li>
+                                <li>Thumbnail Downloader</li>
+                                <li>Tags Extractor</li>
+                                <li>Monetization Checker</li>
+                                <li>Earnings Calculator</li>
+                            </ul>
+                        </div>
+
+                        <div class="footer-section">
+                            <h3>Resources</h3>
+                            <ul>
+                                <li>How It Works</li>
+                                <li>About Us</li>
+                                <li>Privacy Policy</li>
+                                <li>Terms of Service</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="footer-bottom">
+                        <p>&copy; 2026 YouTube Toolkit. All rights reserved.</p>
+                        <p>Made with ❤️ for YouTube Creators</p>
+
+                        <div class="disclaimer">
+                            <strong>Disclaimer:</strong> This tool is not affiliated with, endorsed by, or sponsored by YouTube or Google.
+                            All data is retrieved through the official YouTube Data API v3. Monetization estimates are approximations
+                            based on industry averages and should not be considered as guaranteed earnings. Actual earnings may vary
+                            significantly based on content type, audience demographics, and advertiser demand. Use of this tool is
+                            subject to YouTube's Terms of Service and API usage policies. We do not store any personal information
+                            or video data beyond what is necessary for providing the requested analytics.
+                        </div>
+                    </div>
+                </footer>
+            </div>
+
+            <!-- Tools Pages -->
+            <div id="toolsPages" class="hidden">
+                <div style="text-align: center; margin: 20px 0;">
+                    <button class="back-home-btn" onclick="goHome()">← Back to Home</button>
+                </div>
+
+                <div class="nav-tabs">
+                    <button class="tab-btn" onclick="showTool('monetization')">💰 Monetization</button>
+                    <button class="tab-btn" onclick="showTool('thumbnail')">🖼️ Thumbnails</button>
+                    <button class="tab-btn active" onclick="showTool('video')">📹 Video Info</button>
+                    <button class="tab-btn" onclick="showTool('channel')">🎬 Channel Info</button>
+                    <button class="tab-btn" onclick="showTool('tags')">🏷️ Tags</button>
+                    <button class="tab-btn" onclick="showTool('calculator')">🧮 Calculator</button>
+                </div>
+
+                <div class="content">
+                    <!-- Video Info Tool -->
+                    <div id="videoTool" class="tool-section active">
+                        <div class="tool-header">
+                            <h2>📹 Video Information</h2>
+                            <p>Get detailed analytics for any YouTube video</p>
+                        </div>
+
+                        <div class="form-card">
+                            <div class="input-group">
+                                <label>YouTube Video URL or ID</label>
+                                <input type="text" id="videoUrl" placeholder="https://www.youtube.com/watch?v=..." />
+                            </div>
+                            <button class="btn btn-primary" onclick="getVideoInfo()">Analyze Video</button>
+                        </div>
+
+                        <div id="videoResult" class="result-container hidden"></div>
+                    </div>
+
+                    <!-- Channel Info Tool -->
+                    <div id="channelTool" class="tool-section">
+                        <div class="tool-header">
+                            <h2>🎬 Channel Information</h2>
+                            <p>Analyze any YouTube channel's performance</p>
+                        </div>
+
+                        <div class="form-card">
+                            <div class="input-group">
+                                <label>YouTube Channel URL or ID</label>
+                                <input type="text" id="channelUrl" placeholder="https://www.youtube.com/@username" />
+                            </div>
+                            <button class="btn btn-primary" onclick="getChannelInfo()">Analyze Channel</button>
+                        </div>
+
+                        <div id="channelResult" class="result-container hidden"></div>
+                    </div>
+
+                    <!-- Thumbnail Tool -->
+                    <div id="thumbnailTool" class="tool-section">
+                        <div class="tool-header">
+                            <h2>🖼️ Thumbnail Downloader</h2>
+                            <p>Download thumbnails in all available quality levels</p>
+                        </div>
+
+                        <div class="form-card">
+                            <div class="input-group">
+                                <label>YouTube Video URL or ID</label>
+                                <input type="text" id="thumbnailUrl" placeholder="https://www.youtube.com/watch?v=..." />
+                            </div>
+                            <button class="btn btn-primary" onclick="getThumbnails()">Get Thumbnails</button>
+                        </div>
+
+                        <div id="thumbnailResult" class="result-container hidden"></div>
+                    </div>
+
+                    <!-- Tags Tool -->
+                    <div id="tagsTool" class="tool-section">
+                        <div class="tool-header">
+                            <h2>🏷️ Tags Extractor</h2>
+                            <p>Extract all tags from any YouTube video</p>
+                        </div>
+
+                        <div class="form-card">
+                            <div class="input-group">
+                                <label>YouTube Video URL or ID</label>
+                                <input type="text" id="tagsUrl" placeholder="https://www.youtube.com/watch?v=..." />
+                            </div>
+                            <button class="btn btn-primary" onclick="getTags()">Extract Tags</button>
+                        </div>
+
+                        <div id="tagsResult" class="result-container hidden"></div>
+                    </div>
+
+                    <!-- Monetization Tool -->
+                    <div id="monetizationTool" class="tool-section">
+                        <div class="tool-header">
+                            <h2>💰 Monetization Checker</h2>
+                            <p>Check if a video or channel is monetized</p>
+                        </div>
+
+                        <div class="form-card">
+                            <div class="input-group">
+                                <label>Type</label>
+                                <select id="monetizationType">
+                                    <option value="video">Video</option>
+                                    <option value="channel">Channel</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>YouTube URL or ID</label>
+                                <input type="text" id="monetizationUrl" placeholder="Paste URL here..." />
+                            </div>
+                            <button class="btn btn-primary" onclick="checkMonetization()">Check Status</button>
+                        </div>
+
+                        <div id="monetizationResult" class="result-container hidden"></div>
+                    </div>
+
+                    <!-- Calculator Tool -->
+                    <div id="calculatorTool" class="tool-section">
+                        <div class="tool-header">
+                            <h2>🧮 Earnings Calculator</h2>
+                            <p>Estimate potential YouTube earnings</p>
+                        </div>
+
+                        <div class="form-card">
+                            <div class="input-group">
+                                <label>Number of Views</label>
+                                <input type="number" id="viewCount" placeholder="Enter view count (e.g., 100000)" />
+                            </div>
+                            <button class="btn btn-primary" onclick="calculateEarnings()">Calculate Earnings</button>
+                        </div>
+
+                        <div id="calculatorResult" class="result-container hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const API_BASE_URL = 'http://localhost:8080/api';
+
+            // Theme Toggle
+            function toggleTheme() {
+                const body = document.body;
+                const currentTheme = body.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+            }
+
+            // Load saved theme
+            window.addEventListener('DOMContentLoaded', () => {
+                const savedTheme = localStorage.getItem('theme') || 'dark';
+                document.body.setAttribute('data-theme', savedTheme);
+            });
+
+            // Navigation
+            function goHome() {
+                document.getElementById('homePage').classList.remove('hidden');
+                document.getElementById('toolsPages').classList.add('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function navigateToTool(toolName) {
+                document.getElementById('homePage').classList.add('hidden');
+                document.getElementById('toolsPages').classList.remove('hidden');
+                showTool(toolName);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function showTool(toolName) {
+                document.querySelectorAll('.tool-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                document.getElementById(toolName + 'Tool').classList.add('active');
+                event.target.classList.add('active');
+            }
+
+            async function getVideoInfo() {
+                const url = document.getElementById('videoUrl').value.trim();
+                const resultDiv = document.getElementById('videoResult');
+
+                if (!url) {
+                    showAlert(resultDiv, 'error', 'Please enter a YouTube video URL or ID');
+                    return;
+                }
+
+                showLoading(resultDiv);
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/video/info`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url, type: 'video' })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        const video = data.data;
+                        resultDiv.innerHTML = `
+                            <div class="result-card">
+                                <h3>Video Analytics</h3>
+                                <img src="${video.thumbnailUrl}" alt="Thumbnail" class="result-image">
+                                <div class="info-row">
+                                    <span class="info-label">Title</span>
+                                    <span class="info-value">${video.title}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Channel</span>
+                                    <span class="info-value">${video.channelTitle}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Views</span>
+                                    <span class="info-value">${video.viewCount.toLocaleString()}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Likes</span>
+                                    <span class="info-value">${video.likeCount.toLocaleString()}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Comments</span>
+                                    <span class="info-value">${video.commentCount.toLocaleString()}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Duration</span>
+                                    <span class="info-value">${video.duration}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Published</span>
+                                    <span class="info-value">${new Date(video.publishedAt).toLocaleDateString()}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Quality</span>
+                                    <span class="info-value">${video.definition.toUpperCase()}</span>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        showAlert(resultDiv, 'error', data.error || 'Failed to fetch video information');
+                    }
+                } catch (error) {
+                    showAlert(resultDiv, 'error', 'Connection error. Make sure the backend is running.');
+                }
+            }
+
+            async function getChannelInfo() {
+                const url = document.getElementById('channelUrl').value.trim();
+                const resultDiv = document.getElementById('channelResult');
+
+                if (!url) {
+                    showAlert(resultDiv, 'error', 'Please enter a YouTube channel URL or ID');
+                    return;
+                }
+
+                showLoading(resultDiv);
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/channel/info`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url, type: 'channel' })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        const channel = data.data;
+                        resultDiv.innerHTML = `
+                            <div class="result-card">
+                                <h3>Channel Analytics</h3>
+                                ${channel.bannerUrl ? `<img src="${channel.bannerUrl}" class="channel-banner" alt="Banner">` : ''}
+                                <img src="${channel.thumbnailUrl}" class="channel-avatar" alt="Avatar">
+                                <div class="info-row">
+                                    <span class="info-label">Channel Name</span>
+                                    <span class="info-value">${channel.channelTitle}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Custom URL</span>
+                                    <span class="info-value">${channel.customUrl || 'N/A'}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Subscribers</span>
+                                    <span class="info-value">${channel.subscriberCount.toLocaleString()}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Total Videos</span>
+                                    <span class="info-value">${channel.videoCount.toLocaleString()}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Total Views</span>
+                                    <span class="info-value">${channel.viewCount.toLocaleString()}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Country</span>
+                                    <span class="info-value">${channel.country || 'N/A'}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Created</span>
+                                    <span class="info-value">${new Date(channel.publishedAt).toLocaleDateString()}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Monetization</span>
+                                    <span class="info-value">
+                                        <span class="badge ${channel.isMonetized ? 'badge-success' : 'badge-error'}">
+                                            ${channel.isMonetized ? '✓ Monetized' : '✗ Not Monetized'}
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        showAlert(resultDiv, 'error', data.error || 'Failed to fetch channel information');
+                    }
+                } catch (error) {
+                    showAlert(resultDiv, 'error', 'Connection error. Make sure the backend is running.');
+                }
+            }
+
+            async function getThumbnails() {
+                const url = document.getElementById('thumbnailUrl').value.trim();
+                const resultDiv = document.getElementById('thumbnailResult');
+
+                if (!url) {
+                    showAlert(resultDiv, 'error', 'Please enter a YouTube video URL or ID');
+                    return;
+                }
+
+                showLoading(resultDiv);
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/thumbnail`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url, type: 'video' })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        const thumbnails = data.thumbnails;
+                        let html = `
+                            <div class="result-card">
+                                <h3>${data.title}</h3>
+                                <p style="color: var(--text-secondary); margin-bottom: 24px;">Video ID: ${data.videoId}</p>
+                                <div class="thumbnail-grid">
+                        `;
+
+                        for (const [quality, url] of Object.entries(thumbnails)) {
+                            html += `
+                                <div class="thumbnail-item">
+                                    <h4>${quality}</h4>
+                                    <img src="${url}" alt="${quality}">
+                                    <a href="${url}" download target="_blank">Download</a>
+                                </div>
+                            `;
+                        }
+
+                        html += `</div></div>`;
+                        resultDiv.innerHTML = html;
+                    } else {
+                        showAlert(resultDiv, 'error', data.error || 'Failed to fetch thumbnails');
+                    }
+                } catch (error) {
+                    showAlert(resultDiv, 'error', 'Connection error. Make sure the backend is running.');
+                }
+            }
+
+            async function getTags() {
+                const url = document.getElementById('tagsUrl').value.trim();
+                const resultDiv = document.getElementById('tagsResult');
+
+                if (!url) {
+                    showAlert(resultDiv, 'error', 'Please enter a YouTube video URL or ID');
+                    return;
+                }
+
+                showLoading(resultDiv);
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/video/info`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url, type: 'video' })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success && data.data.tags) {
+                        const tags = data.data.tags;
+                        let html = `
+                            <div class="result-card">
+                                <h3>${data.data.title}</h3>
+                                <p style="color: var(--text-secondary); margin-bottom: 20px;">Total Tags: ${tags ? tags.length : 0}</p>
+                        `;
+
+                        if (tags && tags.length > 0) {
+                            html += '<div class="tag-list">';
+                            tags.forEach(tag => {
+                                html += `<span class="tag">${tag}</span>`;
+                            });
+                            html += '</div>';
+                        } else {
+                            html += '<div class="alert alert-info">No tags found for this video.</div>';
+                        }
+
+                        html += '</div>';
+                        resultDiv.innerHTML = html;
+                    } else {
+                        showAlert(resultDiv, 'error', data.error || 'Failed to extract tags');
+                    }
+                } catch (error) {
+                    showAlert(resultDiv, 'error', 'Connection error. Make sure the backend is running.');
+                }
+            }
+
+            async function checkMonetization() {
+                const type = document.getElementById('monetizationType').value;
+                const url = document.getElementById('monetizationUrl').value.trim();
+                const resultDiv = document.getElementById('monetizationResult');
+
+                if (!url) {
+                    showAlert(resultDiv, 'error', 'Please enter a YouTube URL or ID');
+                    return;
+                }
+
+                showLoading(resultDiv);
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/monetization/check`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url, type })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        resultDiv.innerHTML = `
+                            <div class="result-card">
+                                <h3>Monetization Status</h3>
+                                <div class="info-row">
+                                    <span class="info-label">Type</span>
+                                    <span class="info-value">${data.type.charAt(0).toUpperCase() + data.type.slice(1)}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">ID</span>
+                                    <span class="info-value">${data.videoId || data.channelId}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Status</span>
+                                    <span class="info-value">
+                                        <span class="badge ${data.isMonetized ? 'badge-success' : 'badge-error'}">
+                                            ${data.isMonetized ? '✓ Monetized' : '✗ Not Monetized'}
+                                        </span>
+                                    </span>
+                                </div>
+                                <div class="alert alert-info" style="margin-top: 24px;">
+                                    ${data.message}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        showAlert(resultDiv, 'error', data.error || 'Failed to check monetization');
+                    }
+                } catch (error) {
+                    showAlert(resultDiv, 'error', 'Connection error. Make sure the backend is running.');
+                }
+            }
+
+            function calculateEarnings() {
+                const views = document.getElementById('viewCount').value.trim();
+                const resultDiv = document.getElementById('calculatorResult');
+
+                if (!views || views <= 0) {
+                    showAlert(resultDiv, 'error', 'Please enter a valid view count');
+                    return;
+                }
+
+                const numViews = parseInt(views);
+                const minCPM = 0.25;
+                const avgCPM = 2.0;
+                const maxCPM = 4.0;
+
+                const minimum = (numViews / 1000) * minCPM;
+                const average = (numViews / 1000) * avgCPM;
+                const maximum = (numViews / 1000) * maxCPM;
+
+                resultDiv.classList.remove('hidden');
+                resultDiv.innerHTML = `
+                    <div class="result-card">
+                        <h3>Estimated Earnings</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 24px;">Based on ${numViews.toLocaleString()} views</p>
+                        <div class="earnings-grid">
+                            <div class="earnings-item">
+                                <div class="earnings-label">Minimum</div>
+                                <div class="earnings-value">$${minimum.toFixed(2)}</div>
+                            </div>
+                            <div class="earnings-item">
+                                <div class="earnings-label">Average</div>
+                                <div class="earnings-value">$${average.toFixed(2)}</div>
+                            </div>
+                            <div class="earnings-item">
+                                <div class="earnings-label">Maximum</div>
+                                <div class="earnings-value">$${maximum.toFixed(2)}</div>
+                            </div>
+                        </div>
+                        <div class="alert alert-info" style="margin-top: 24px;">
+                            <strong>Disclaimer:</strong> These are estimates based on average CPM rates. Actual earnings vary based on niche, audience location, engagement, and advertiser demand.
+                        </div>
+                    </div>
+                `;
+            }
+
+            function showLoading(container) {
+                container.classList.remove('hidden');
+                container.innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">Loading data...</div>
+                    </div>
+                `;
+            }
+
+            function showAlert(container, type, message) {
+                container.classList.remove('hidden');
+                container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            }
+        </script>
+        </body>
+        </html>
